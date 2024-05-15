@@ -36,8 +36,8 @@ public class AccountsServiceImpl implements IAccountsService {
             customerDto.getMobileNumber());
        }
        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
-       customer.setCreatedAt(LocalDateTime.now());
-       customer.setCreatedBy("Anonymous");
+    //    customer.setCreatedAt(LocalDateTime.now());
+    //    customer.setCreatedBy("Anonymous");
        Customer savedCustomer = customerRepository.save(customer);
        accountsRepository.save(createNewAccount(savedCustomer));
     }
@@ -54,8 +54,8 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setAccountNumber(randomAccNumber);
         newAccount.setAccountType(AccountsConstants.SAVINGS);
         newAccount.setBranchAddress(AccountsConstants.ADDRESS);
-        newAccount.setCreatedAt(LocalDateTime.now());
-        newAccount.setCreatedBy("Anonymous");
+        // newAccount.setCreatedAt(LocalDateTime.now());
+        // newAccount.setCreatedBy("Anonymous");
         return newAccount;
     }
 
@@ -93,6 +93,16 @@ public class AccountsServiceImpl implements IAccountsService {
             isUpdated = true;
         }
        return isUpdated;
+    }
+
+    @Override
+    public boolean deleteAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> 
+                            new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber));
+        accountsRepository.deleteByCustomerId(customer.getCustomerId());                   
+        customerRepository.delete(customer);
+        return true;
+
     }
     
 }
